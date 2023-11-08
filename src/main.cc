@@ -1,8 +1,8 @@
 #include <iostream>
 #include <fstream>
 
-#include <grpc/support/log.h>
-#include <grpcpp/grpcpp.h>
+#include <csi.pb.h>
+
 #include <cxxopts.hpp>
 
 const std::string VERSION_FILE = "VERSION";
