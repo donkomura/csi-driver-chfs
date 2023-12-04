@@ -1,3 +1,4 @@
+#include <csi.pb.h>
 #include <grpc/support/log.h>
 #include <grpcpp/grpcpp.h>
 
