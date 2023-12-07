@@ -10,7 +10,11 @@ const std::string VERSION_FILE = "VERSION";
 
 int main(int argc, char **argv) {
   cxxopts::Options options("chfsplugin", "CSI driver for CHFS");
-  options.add_options()("h,help", "Print this message")("v,version", "version");
+  // clang-format off
+  options.add_options()
+    ("h,help", "Print this message")
+    ("v,version", "version")
+    ("e,endpoint", "CSI endpoint", cxxopts::value<std::string>()->default_value("unix::///tmp/csi.sock"));
 
   auto parsed = options.parse(argc, argv);
   if (parsed.count("help")) {
