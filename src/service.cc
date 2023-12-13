@@ -6,6 +6,8 @@
 #include <grpcpp/server_builder.h>
 #include <grpcpp/server_context.h>
 
+#include "node_service.h"
+
 namespace csi {
 namespace service {
 Config::Config() {}
@@ -18,7 +20,12 @@ void Server::Run() {
   builder.AddListeningPort(config().endpoint(),
                            grpc::InsecureServerCredentials());
 
+  node::NodeService node_service;
+
+  builder.RegisterService(&node_service);
+
   std::unique_ptr<grpc::Server> server(builder.BuildAndStart());
+  std::cout << "Listening on " << config().endpoint() << std::endl;
   server->Wait();
 }
 }  // namespace service
