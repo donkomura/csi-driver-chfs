@@ -2,6 +2,7 @@ add_executable(main
     main.cc
     service.cc
     node_service.cc
+    identity_service.cc
     ${csi_proto_srcs}
     ${csi_grpc_srcs}
 )
