@@ -1,10 +1,8 @@
-#include <csi.pb.h>
-#include <grpc/support/log.h>
-#include <grpcpp/grpcpp.h>
-
 #include <cxxopts.hpp>
 #include <fstream>
 #include <iostream>
+
+#include "service.h"
 
 const std::string VERSION_FILE = "VERSION";
 
@@ -14,7 +12,9 @@ int main(int argc, char **argv) {
   options.add_options()
     ("h,help", "Print this message")
     ("v,version", "version")
-    ("e,endpoint", "CSI endpoint", cxxopts::value<std::string>()->default_value("unix::///tmp/csi.sock"));
+    ("e,endpoint", "CSI endpoint",
+      cxxopts::value<std::string>()->default_value("unix://tmp/csi.sock"))
+  ;
 
   auto parsed = options.parse(argc, argv);
   if (parsed.count("help")) {
@@ -34,4 +34,10 @@ int main(int argc, char **argv) {
       exit(0);
     }
   }
+
+  csi::service::Config config;
+  config.endpoint() = parsed["endpoint"].as<std::string>();
+
+  csi::service::Server server(config);
+  server.Run();
 }
