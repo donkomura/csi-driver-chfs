@@ -8,4 +8,9 @@ add_executable(main
     ${csi_grpc_srcs}
 )
 target_include_directories(main PRIVATE ${csi-spec_INCLUDE_DIR})
-target_link_libraries(main grpc++ grpc++_reflection cxxopts protobuf::libprotobuf)
+target_link_libraries(main
+    ${csi_grpc_proto}
+    ${_REFLECTION}
+    ${_GRPC_GRPCPP}
+    ${_PROTOBUF_LIBPROTOBUF}
+)
