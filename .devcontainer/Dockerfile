@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/devcontainers/cpp:1-debian-11
+FROM mcr.microsoft.com/devcontainers/cpp:ubuntu
 
 ARG REINSTALL_CMAKE_VERSION_FROM_SOURCE="none"
 
@@ -16,3 +16,19 @@ RUN if [ "${REINSTALL_CMAKE_VERSION_FROM_SOURCE}" != "none" ]; then \
 # [Optional] Uncomment this section to install additional packages.
 # RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
 #     && apt-get -y install --no-install-recommends <your-package-list-here>
+
+# Update and upgrade repo
+RUN apt-get update -y -q \
+    && apt-get install -y wget git
+
+# download and install golang
+ENV GOVERSION=1.21.5
+ENV GOPATH /go
+RUN wget -P /tmp "https://go.dev/dl/go${GOVERSION}.linux-amd64.tar.gz" \
+    && tar -C /usr/local -xzf /tmp/go${GOVERSION}.linux-amd64.tar.gz
+RUN rm /tmp/go${GOVERSION}.linux-amd64.tar.gz
+ENV PATH $GOPATH/bin:/usr/local/go/bin:$PATH
+RUN mkdir -p "$GOPATH/src" "$GOPATH/bin" && chmod -R 777 "$GOPATH"
+
+# install csi-sanity (v5)
+RUN go install -v github.com/kubernetes-csi/csi-test/v5/cmd/csi-sanity@latest
