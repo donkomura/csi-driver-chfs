@@ -4,10 +4,14 @@
 #include <csi.grpc.pb.h>
 #include <csi.pb.h>
 
+#include "service.h"
+
 namespace csi::service::identity {
 class IdentityService final : public csi::v1::Identity::Service {
  public:
-  IdentityService();
+  IdentityService(csi::service::Config const &config);
+  IdentityService(const IdentityService &) = delete;
+  IdentityService &operator=(const IdentityService &) = delete;
   ~IdentityService();
 
   grpc::Status GetPluginInfo(grpc::ServerContext *context,
@@ -20,6 +24,9 @@ class IdentityService final : public csi::v1::Identity::Service {
   grpc::Status Probe(grpc::ServerContext *context,
                      const csi::v1::ProbeRequest *request,
                      csi::v1::ProbeResponse *response) override;
+
+ private:
+  csi::service::Config const &config_;
 };
 }  // namespace csi::service::identity
 

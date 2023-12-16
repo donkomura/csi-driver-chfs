@@ -49,7 +49,7 @@ int main(int argc, char **argv) {
     exit(0);
   }
   if (parsed.count("version")) {
-    const std::string version = GetVersion(VERSION_FILE);
+    std::cout << GetVersion(VERSION_FILE) << std::endl;
   }
 
   static plog::ConsoleAppender<plog::TxtFormatter> consoleAppender;
@@ -57,7 +57,8 @@ int main(int argc, char **argv) {
 
   const std::string endpoint = parsed["endpoint"].as<std::string>();
   const std::string driver_name = parsed["driver-name"].as<std::string>();
-  csi::service::Config config(endpoint);
+  const std::string version = GetVersion(VERSION_FILE);
+  csi::service::Config config(endpoint, driver_name, version);
 
   csi::service::Server server(config);
   server.Run();
