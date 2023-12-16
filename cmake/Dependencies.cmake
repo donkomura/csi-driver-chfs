@@ -31,6 +31,16 @@ macro(install_dependencies)
     FetchContent_MakeAvailable(cxxopts)
     include_directories(${cxxopts_SOURCE_DIR}/include)
 
+    set(plog_VERSION 1.1.10)
+    message(STATUS "plog ${plog_VERSION}")
+    # install plog
+    FetchContent_Declare(
+        plog
+        GIT_REPOSITORY https://github.com/SergiusTheBest/plog.git
+        GIT_TAG e21baecd4753f14da64ede979c5a19302618b752 # 1.1.10
+    )
+    FetchContent_MakeAvailable(plog)
+
     set(csi-spec_VERSION v1.9.0+dev)
     message(STATUS "csi-spec ${csi-spec_VERSION}")
     # install CSI spec
