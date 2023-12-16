@@ -5,14 +5,16 @@
 #include <grpcpp/server.h>
 #include <grpcpp/server_builder.h>
 #include <grpcpp/server_context.h>
+#include <plog/Log.h>
 
 #include "identity_service.h"
 #include "node_service.h"
 
 namespace csi {
 namespace service {
-Config::Config() {}
+Config::Config(const std::string endpoint) : endpoint_(endpoint) {}
 Config::~Config() {}
+
 Server::Server(Config config) : config_(config) {}
 Server::~Server() {}
 
@@ -27,7 +29,7 @@ void Server::Run() {
   builder.RegisterService(&identity_service);
 
   std::unique_ptr<grpc::Server> server(builder.BuildAndStart());
-  std::cout << "Listening on " << config().endpoint() << std::endl;
+  PLOG_INFO << "Listening on " << config().endpoint();
   server->Wait();
 }
 }  // namespace service
