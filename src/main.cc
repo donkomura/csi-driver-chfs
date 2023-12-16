@@ -39,7 +39,7 @@ int main(int argc, char **argv) {
     ("v,version", "version")
     ("e,endpoint", "CSI endpoint",
       cxxopts::value<std::string>()->default_value("unix://tmp/csi.sock"))
-    ("d,driver-name", "name of this CSI driver",
+    ("n,driver-name", "name of this CSI driver",
       cxxopts::value<std::string>()->default_value("chfsplugin"))
   ;
 
