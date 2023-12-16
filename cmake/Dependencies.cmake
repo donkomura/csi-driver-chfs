@@ -18,6 +18,7 @@ macro(install_dependencies)
     set(ABSL_PROPAGATE_CXX_STD ON)
     set(ABSL_ENABLE_INSTALL ON)
     FetchContent_MakeAvailable(grpc)
+    include_directories(${grpc_SOURCE_DIR} ${protobuf_SOURCE_DIR}/src ${absl_SOURCE_DIR})
 
     set(cxxopts_VERSION v3.1.1)
     message(STATUS "cxxopts ${cxxopts_VERSION}")

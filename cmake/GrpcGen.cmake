@@ -22,7 +22,7 @@ add_custom_command(
     ARGS --grpc_out "${CMAKE_CURRENT_BINARY_DIR}"
     --cpp_out "${CMAKE_CURRENT_BINARY_DIR}"
     -I "${csi_proto_path}"
-    -I "${grpc_SOURCE_DIR}/third_party/protobuf/src"
+    -I "${protobuf_SOURCE_DIR}/src"
     --plugin=protoc-gen-grpc="${_GRPC_CPP_PLUGIN_EXECUTABLE}"
     "${csi_proto}"
     DEPENDS "${csi_proto}"
@@ -31,6 +31,11 @@ add_custom_command(
 # include generated *.grpc.pb.h
 include_directories("${CMAKE_CURRENT_BINARY_DIR}")
 
+# protobuf proto
+add_library(csi_proto
+    ${csi_proto_srcs}
+    ${csi_proto_hdrs}
+)
 # grpc proto
 add_library(csi_grpc_proto
     ${csi_grpc_srcs}
