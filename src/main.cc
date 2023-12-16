@@ -35,8 +35,8 @@ int main(int argc, char **argv) {
     }
   }
 
-  csi::service::Config config;
-  config.endpoint() = parsed["endpoint"].as<std::string>();
+  const std::string endpoint = parsed["endpoint"].as<std::string>();
+  csi::service::Config config(endpoint);
 
   csi::service::Server server(config);
   server.Run();

@@ -11,7 +11,7 @@
 
 namespace csi {
 namespace service {
-Config::Config() {}
+Config::Config(const std::string endpoint) : endpoint_(endpoint) {}
 Config::~Config() {}
 Server::Server(Config config) : config_(config) {}
 Server::~Server() {}

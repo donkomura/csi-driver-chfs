@@ -7,10 +7,9 @@ namespace csi {
 namespace service {
 class Config {
  public:
-  Config();
+  Config(const std::string endpoint);
   ~Config();
 
-  std::string &endpoint() { return endpoint_; }
   const std::string &endpoint() const { return endpoint_; }
 
  private:
