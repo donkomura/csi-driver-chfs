@@ -34,23 +34,22 @@ Server::~Server() {}
 
 void Server::AddControllerCapabilities(
     std::vector<csi::v1::ControllerServiceCapability_RPC_Type> types) {
-  controller_capabilities_.insert(controller_capabilities_.end(), types.begin(),
-                                  types.end());
+  controller_capabilities_ = types;
 }
 
 void Server::AddNodeCapabilities(
     std::vector<csi::v1::NodeServiceCapability_RPC_Type> types) {
-  node_capabilities_.insert(node_capabilities_.end(), types.begin(),
-                            types.end());
+  node_capabilities_ = types;
 }
 
 void Server::Run() {
   grpc::ServerBuilder builder;
   builder.AddListeningPort(config().endpoint(),
                            grpc::InsecureServerCredentials());
-  node::NodeService node_service(config(), node_capabilities_);
+  node::NodeService node_service(config(), node_capabilities());
   identity::IdentityService identity_service(config());
-  controller::ControllerService controller_service(config());
+  controller::ControllerService controller_service(config(),
+                                                   controller_capabilities());
 
   builder.RegisterService(&node_service);
   builder.RegisterService(&identity_service);

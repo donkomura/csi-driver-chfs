@@ -6,8 +6,10 @@
 #include "config.h"
 
 namespace csi::service::controller {
-ControllerService::ControllerService(const csi::service::Config &config)
-    : config_(config) {}
+ControllerService::ControllerService(
+    const csi::service::Config &config,
+    std::vector<csi::v1::ControllerServiceCapability_RPC_Type> capabilities)
+    : config_(config), capabilities_(capabilities) {}
 ControllerService::~ControllerService() {}
 
 grpc::Status ControllerService::CreateVolume(
@@ -59,6 +61,10 @@ grpc::Status ControllerService::ControllerGetCapabilities(
     grpc::ServerContext *context,
     const csi::v1::ControllerGetCapabilitiesRequest *request,
     csi::v1::ControllerGetCapabilitiesResponse *response) {
+  auto *capabilities = response->mutable_capabilities();
+  for (auto const cap : capabilities_) {
+    capabilities->Add()->mutable_rpc()->set_type(cap);
+  }
   return grpc::Status::OK;
 }
 
@@ -96,19 +102,9 @@ grpc::Status ControllerService::ControllerGetVolume(
 
 bool ControllerService::IsControllerServiceRequestValid(
     csi::v1::ControllerServiceCapability_RPC_Type serviceType) const {
-  for (auto const cap : GetControllerServiceCapabilities()) {
+  for (auto const cap : capabilities_) {
     if (cap == serviceType) return true;
   }
   return false;
-}
-
-std::vector<csi::v1::ControllerServiceCapability_RPC_Type>
-ControllerService::GetControllerServiceCapabilities() const {
-  using cap = csi::v1::ControllerServiceCapability::RPC::Type;
-  return std::vector<csi::v1::ControllerServiceCapability_RPC_Type>{
-      cap::ControllerServiceCapability_RPC_Type_CREATE_DELETE_VOLUME,
-      cap::ControllerServiceCapability_RPC_Type_LIST_VOLUMES,
-      cap::ControllerServiceCapability_RPC_Type_GET_CAPACITY,
-      cap::ControllerServiceCapability_RPC_Type_GET_VOLUME};
 }
 }  // namespace csi::service::controller
