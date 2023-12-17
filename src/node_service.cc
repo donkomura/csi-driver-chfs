@@ -63,5 +63,6 @@ grpc::Status node::NodeService::NodeGetCapabilities(
 grpc::Status node::NodeService::NodeGetInfo(
     grpc::ServerContext *context, const csi::v1::NodeGetInfoRequest *request,
     csi::v1::NodeGetInfoResponse *response) {
+  response->set_node_id(config_.node_id());
   return grpc::Status::OK;
 }

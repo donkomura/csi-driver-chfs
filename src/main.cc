@@ -41,6 +41,8 @@ int main(int argc, char **argv) {
       cxxopts::value<std::string>()->default_value("unix://tmp/csi.sock"))
     ("n,driver-name", "name of this CSI driver",
       cxxopts::value<std::string>()->default_value("chfsplugin"))
+    ("i,node-id", "node id",
+      cxxopts::value<std::string>()->default_value(""))
   ;
 
   auto parsed = options.parse(argc, argv);
@@ -57,8 +59,9 @@ int main(int argc, char **argv) {
 
   const std::string endpoint = parsed["endpoint"].as<std::string>();
   const std::string driver_name = parsed["driver-name"].as<std::string>();
+  const std::string node_id = parsed["node-id"].as<std::string>();
   const std::string version = GetVersion(VERSION_FILE);
-  csi::service::Config config(endpoint, driver_name, version);
+  csi::service::Config config(endpoint, driver_name, node_id, version);
 
   csi::service::Server server(config);
   server.Run();
