@@ -8,6 +8,7 @@
 #include <plog/Log.h>
 
 #include "config.h"
+#include "controller_service.h"
 #include "identity_service.h"
 #include "node_service.h"
 
@@ -22,6 +23,7 @@ void Server::Run() {
                            grpc::InsecureServerCredentials());
   node::NodeService node_service(config());
   identity::IdentityService identity_service(config());
+  controller::ControllerService controller_service(config());
 
   builder.RegisterService(&node_service);
   builder.RegisterService(&identity_service);
