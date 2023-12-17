@@ -32,3 +32,13 @@ RUN mkdir -p "$GOPATH/src" "$GOPATH/bin" && chmod -R 777 "$GOPATH"
 
 # install csi-sanity (v5)
 RUN go install -v github.com/kubernetes-csi/csi-test/v5/cmd/csi-sanity@latest
+
+# install chfs dependencies
+RUN apt-get -y install \
+    gcc automake \
+    libtool pkgconf \
+    python3 bison fuse sudo curl \
+    libfuse-dev pandoc \
+    libopenmpi-dev libssl-dev \
+    gdb numactl
+
