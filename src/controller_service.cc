@@ -3,8 +3,11 @@
 #include <csi.grpc.pb.h>
 #include <csi.pb.h>
 
+#include "config.h"
+
 namespace csi::service::controller {
-ControllerService::ControllerService() {}
+ControllerService::ControllerService(const csi::service::Config &config)
+    : config_(config) {}
 ControllerService::~ControllerService() {}
 
 grpc::Status ControllerService::CreateVolume(

@@ -6,10 +6,12 @@
 
 #include <vector>
 
+#include "config.h"
+
 namespace csi::service::controller {
 class ControllerService final : public csi::v1::Controller::Service {
  public:
-  ControllerService();
+  ControllerService(const csi::service::Config &config);
   ~ControllerService();
 
   grpc::Status CreateVolume(grpc::ServerContext *context,
@@ -61,6 +63,7 @@ class ControllerService final : public csi::v1::Controller::Service {
       csi::v1::ControllerGetVolumeResponse *response) override;
 
  private:
+  csi::service::Config const &config_;
   bool IsControllerServiceRequestValid(
       csi::v1::ControllerServiceCapability_RPC_Type serviceType) const;
   std::vector<csi::v1::ControllerServiceCapability_RPC_Type>
