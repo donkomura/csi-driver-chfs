@@ -48,7 +48,7 @@ void Server::Run() {
   grpc::ServerBuilder builder;
   builder.AddListeningPort(config().endpoint(),
                            grpc::InsecureServerCredentials());
-  node::NodeService node_service(config());
+  node::NodeService node_service(config(), node_capabilities_);
   identity::IdentityService identity_service(config());
   controller::ControllerService controller_service(config());
 
