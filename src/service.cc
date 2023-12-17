@@ -12,7 +12,9 @@
 
 namespace csi {
 namespace service {
-Config::Config(const std::string endpoint) : endpoint_(endpoint) {}
+Config::Config(const std::string endpoint, const std::string driver_name,
+               const std::string version)
+    : endpoint_(endpoint), driver_name_(driver_name), version_(version) {}
 Config::~Config() {}
 
 Server::Server(Config config) : config_(config) {}
@@ -23,7 +25,7 @@ void Server::Run() {
   builder.AddListeningPort(config().endpoint(),
                            grpc::InsecureServerCredentials());
   node::NodeService node_service;
-  identity::IdentityService identity_service;
+  identity::IdentityService identity_service(config());
 
   builder.RegisterService(&node_service);
   builder.RegisterService(&identity_service);
