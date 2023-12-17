@@ -9,7 +9,7 @@ namespace node = csi::service::node;
 
 node::NodeService::NodeService(
     const csi::service::Config &config,
-    std::vector<csi::v1::NodeServiceCapability_RPC_Type> const &capabilities)
+    std::vector<csi::v1::NodeServiceCapability_RPC_Type> capabilities)
     : config_(config), capabilities_(capabilities) {}
 node::NodeService::~NodeService() {}
 

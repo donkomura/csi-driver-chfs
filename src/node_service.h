@@ -11,7 +11,7 @@ class NodeService final : public csi::v1::Node::Service {
  public:
   NodeService(
       csi::service::Config const &config,
-      std::vector<csi::v1::NodeServiceCapability_RPC_Type> const &capabilities);
+      std::vector<csi::v1::NodeServiceCapability_RPC_Type> capabilities);
   NodeService(const NodeService &) = delete;
   NodeService &operator=(const NodeService &) = delete;
   ~NodeService();
@@ -50,7 +50,7 @@ class NodeService final : public csi::v1::Node::Service {
 
  private:
   csi::service::Config const &config_;
-  std::vector<csi::v1::NodeServiceCapability_RPC_Type> const &capabilities_;
+  std::vector<csi::v1::NodeServiceCapability_RPC_Type> capabilities_;
 };
 }  // namespace csi::service::node
 
