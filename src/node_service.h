@@ -4,10 +4,14 @@
 #include <csi.grpc.pb.h>
 #include <csi.pb.h>
 
+#include "config.h"
+
 namespace csi::service::node {
 class NodeService final : public csi::v1::Node::Service {
  public:
-  NodeService();
+  NodeService(csi::service::Config const &config);
+  NodeService(const NodeService &) = delete;
+  NodeService &operator=(const NodeService &) = delete;
   ~NodeService();
 
   grpc::Status NodeGetInfo(grpc::ServerContext *context,
@@ -41,6 +45,9 @@ class NodeService final : public csi::v1::Node::Service {
       grpc::ServerContext *context,
       const csi::v1::NodeGetCapabilitiesRequest *request,
       csi::v1::NodeGetCapabilitiesResponse *response) override;
+
+ private:
+  csi::service::Config const &config_;
 };
 }  // namespace csi::service::node
 
