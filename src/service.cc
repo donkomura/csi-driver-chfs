@@ -26,8 +26,6 @@ Server::Server(Config config) : config_(config) {
       std::vector<csi::v1::ControllerServiceCapability_RPC_Type>{
           csi::v1::ControllerServiceCapability_RPC_Type::
               ControllerServiceCapability_RPC_Type_CREATE_DELETE_VOLUME,
-          csi::v1::ControllerServiceCapability_RPC_Type::
-              ControllerServiceCapability_RPC_Type_UNKNOWN,
       });
 }
 Server::~Server() {}
