@@ -7,8 +7,10 @@
 
 namespace node = csi::service::node;
 
-node::NodeService::NodeService(const csi::service::Config &config)
-    : config_(config) {}
+node::NodeService::NodeService(
+    const csi::service::Config &config,
+    std::vector<csi::v1::NodeServiceCapability_RPC_Type> capabilities)
+    : config_(config), capabilities_(capabilities) {}
 node::NodeService::~NodeService() {}
 
 grpc::Status node::NodeService::NodeStageVolume(
@@ -63,5 +65,6 @@ grpc::Status node::NodeService::NodeGetCapabilities(
 grpc::Status node::NodeService::NodeGetInfo(
     grpc::ServerContext *context, const csi::v1::NodeGetInfoRequest *request,
     csi::v1::NodeGetInfoResponse *response) {
+  response->set_node_id(config_.node_id());
   return grpc::Status::OK;
 }

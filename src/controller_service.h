@@ -11,7 +11,9 @@
 namespace csi::service::controller {
 class ControllerService final : public csi::v1::Controller::Service {
  public:
-  ControllerService(const csi::service::Config &config);
+  ControllerService(
+      const csi::service::Config &config,
+      std::vector<csi::v1::ControllerServiceCapability_RPC_Type> capabilities);
   ~ControllerService();
 
   grpc::Status CreateVolume(grpc::ServerContext *context,
@@ -64,10 +66,9 @@ class ControllerService final : public csi::v1::Controller::Service {
 
  private:
   csi::service::Config const &config_;
+  std::vector<csi::v1::ControllerServiceCapability_RPC_Type> capabilities_;
   bool IsControllerServiceRequestValid(
       csi::v1::ControllerServiceCapability_RPC_Type serviceType) const;
-  std::vector<csi::v1::ControllerServiceCapability_RPC_Type>
-  GetControllerServiceCapabilities() const;
 };
 }  // namespace csi::service::controller
 

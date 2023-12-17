@@ -14,19 +14,46 @@
 
 namespace csi {
 namespace service {
-Server::Server(Config config) : config_(config) {}
+Server::Server(Config config) : config_(config) {
+  this->AddNodeCapabilities(
+      std::vector<csi::v1::NodeServiceCapability_RPC_Type>{
+          csi::v1::NodeServiceCapability_RPC_Type::
+              NodeServiceCapability_RPC_Type_GET_VOLUME_STATS,
+          csi::v1::NodeServiceCapability_RPC_Type::
+              NodeServiceCapability_RPC_Type_UNKNOWN,
+      });
+  this->AddControllerCapabilities(
+      std::vector<csi::v1::ControllerServiceCapability_RPC_Type>{
+          csi::v1::ControllerServiceCapability_RPC_Type::
+              ControllerServiceCapability_RPC_Type_CREATE_DELETE_VOLUME,
+          csi::v1::ControllerServiceCapability_RPC_Type::
+              ControllerServiceCapability_RPC_Type_UNKNOWN,
+      });
+}
 Server::~Server() {}
+
+void Server::AddControllerCapabilities(
+    std::vector<csi::v1::ControllerServiceCapability_RPC_Type> types) {
+  controller_capabilities_ = types;
+}
+
+void Server::AddNodeCapabilities(
+    std::vector<csi::v1::NodeServiceCapability_RPC_Type> types) {
+  node_capabilities_ = types;
+}
 
 void Server::Run() {
   grpc::ServerBuilder builder;
   builder.AddListeningPort(config().endpoint(),
                            grpc::InsecureServerCredentials());
-  node::NodeService node_service(config());
+  node::NodeService node_service(config(), node_capabilities());
   identity::IdentityService identity_service(config());
-  controller::ControllerService controller_service(config());
+  controller::ControllerService controller_service(config(),
+                                                   controller_capabilities());
 
   builder.RegisterService(&node_service);
   builder.RegisterService(&identity_service);
+  builder.RegisterService(&controller_service);
 
   std::unique_ptr<grpc::Server> server(builder.BuildAndStart());
   PLOG_INFO << "Listening on " << config().endpoint();
