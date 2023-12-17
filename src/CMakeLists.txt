@@ -1,6 +1,7 @@
 add_executable(main
     main.cc
     service.cc
+    config.cc
     node_service.cc
     identity_service.cc
     controller_service.cc

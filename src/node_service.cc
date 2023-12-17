@@ -3,16 +3,13 @@
 #include <csi.grpc.pb.h>
 #include <csi.pb.h>
 
+#include "config.h"
+
 namespace node = csi::service::node;
 
-node::NodeService::NodeService() {}
+node::NodeService::NodeService(const csi::service::Config &config)
+    : config_(config) {}
 node::NodeService::~NodeService() {}
-
-grpc::Status node::NodeService::NodeGetInfo(
-    grpc::ServerContext *context, const csi::v1::NodeGetInfoRequest *request,
-    csi::v1::NodeGetInfoResponse *response) {
-  return grpc::Status::OK;
-}
 
 grpc::Status node::NodeService::NodeStageVolume(
     grpc::ServerContext *context,
@@ -60,5 +57,11 @@ grpc::Status node::NodeService::NodeGetCapabilities(
     grpc::ServerContext *context,
     const csi::v1::NodeGetCapabilitiesRequest *request,
     csi::v1::NodeGetCapabilitiesResponse *response) {
+  return grpc::Status::OK;
+}
+
+grpc::Status node::NodeService::NodeGetInfo(
+    grpc::ServerContext *context, const csi::v1::NodeGetInfoRequest *request,
+    csi::v1::NodeGetInfoResponse *response) {
   return grpc::Status::OK;
 }

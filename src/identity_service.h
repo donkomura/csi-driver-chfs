@@ -4,6 +4,7 @@
 #include <csi.grpc.pb.h>
 #include <csi.pb.h>
 
+#include "config.h"
 #include "service.h"
 
 namespace csi::service::identity {
