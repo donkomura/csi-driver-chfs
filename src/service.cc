@@ -27,6 +27,7 @@ void Server::Run() {
 
   builder.RegisterService(&node_service);
   builder.RegisterService(&identity_service);
+  builder.RegisterService(&controller_service);
 
   std::unique_ptr<grpc::Server> server(builder.BuildAndStart());
   PLOG_INFO << "Listening on " << config().endpoint();
