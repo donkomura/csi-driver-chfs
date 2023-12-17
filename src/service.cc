@@ -7,16 +7,12 @@
 #include <grpcpp/server_context.h>
 #include <plog/Log.h>
 
+#include "config.h"
 #include "identity_service.h"
 #include "node_service.h"
 
 namespace csi {
 namespace service {
-Config::Config(const std::string endpoint, const std::string driver_name,
-               const std::string version)
-    : endpoint_(endpoint), driver_name_(driver_name), version_(version) {}
-Config::~Config() {}
-
 Server::Server(Config config) : config_(config) {}
 Server::~Server() {}
 
