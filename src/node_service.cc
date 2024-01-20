@@ -1,7 +1,9 @@
 #include "node_service.h"
 
+#include <chfs.h>
 #include <csi.grpc.pb.h>
 #include <csi.pb.h>
+#include <plog/Log.h>
 
 #include "config.h"
 
@@ -31,6 +33,7 @@ grpc::Status node::NodeService::NodePublishVolume(
     grpc::ServerContext *context,
     const csi::v1::NodePublishVolumeRequest *request,
     csi::v1::NodePublishVolumeResponse *response) {
+  PLOG_DEBUG << "NodePublishVolume: " << request->DebugString();
   return grpc::Status::OK;
 }
 
@@ -59,6 +62,10 @@ grpc::Status node::NodeService::NodeGetCapabilities(
     grpc::ServerContext *context,
     const csi::v1::NodeGetCapabilitiesRequest *request,
     csi::v1::NodeGetCapabilitiesResponse *response) {
+  auto *capabilities_ = response->add_capabilities();
+  capabilities_->mutable_rpc()->set_type(
+      csi::v1::NodeServiceCapability::RPC::Type::
+          NodeServiceCapability_RPC_Type_SINGLE_NODE_MULTI_WRITER);
   return grpc::Status::OK;
 }
 
