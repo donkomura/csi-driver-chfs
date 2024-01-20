@@ -3,6 +3,7 @@
 #include <plog/Init.h>
 #include <plog/Log.h>
 
+#include <cstdlib>
 #include <cxxopts.hpp>
 #include <fstream>
 #include <iostream>
@@ -43,6 +44,7 @@ int main(int argc, char **argv) {
       cxxopts::value<std::string>()->default_value("chfsplugin"))
     ("i,node-id", "node id",
       cxxopts::value<std::string>()->default_value(""))
+    ("s,chfs-server", "chfs server address", cxxopts::value<std::string>()->default_value(""))
   ;
 
   auto parsed = options.parse(argc, argv);
@@ -61,7 +63,17 @@ int main(int argc, char **argv) {
   const std::string driver_name = parsed["driver-name"].as<std::string>();
   const std::string node_id = parsed["node-id"].as<std::string>();
   const std::string version = GetVersion(VERSION_FILE);
-  csi::service::Config config(endpoint, driver_name, node_id, version);
+  std::string server_address = parsed["chfs-server"].as<std::string>();
+  if (server_address.empty()) {
+    // set default chfs server address from CHFS_SERVER env var
+    const char *address = std::getenv("CHFS_SERVER");
+    if (address == NULL) {
+      PLOG_ERROR << "chfs server address does not found";
+      exit(1);
+    }
+    server_address = address;
+  }
+  csi::service::Config config(endpoint, driver_name, node_id, version, server_address);
 
   csi::service::Server server(config);
   server.Run();

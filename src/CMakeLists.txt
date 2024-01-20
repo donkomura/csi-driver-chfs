@@ -11,7 +11,7 @@ target_link_libraries(main
     csi_proto
     csi_grpc_proto
     plog
-    ${CHFS_LIBRARIES}
+    ${CHFS_LIBS}
     ${_REFLECTION}
     ${_GRPC_GRPCPP}
     ${_PROTOBUF_LIBPROTOBUF}
