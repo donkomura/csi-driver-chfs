@@ -2,6 +2,7 @@ macro(install_dependencies)
     # prerequisites
     include(FetchContent)
     find_program(MAKE_EXE NAMES gmake nmake make)
+    find_package(PkgConfig)
 
     if(CMAKE_BUILD_TYPE EQUAL "DEBUG")
         set(FETCHCONTENT_QUIET FALSE)
@@ -53,6 +54,8 @@ macro(install_dependencies)
     if (NOT csi-spec_POPULATED)
         FetchContent_Populate(csi-spec)
     endif()
+
+    pkg_check_modules(CHFS REQUIRED chfs)
 
     include(cmake/GrpcGen.cmake)
 endmacro()
