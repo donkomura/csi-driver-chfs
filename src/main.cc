@@ -43,7 +43,7 @@ int main(int argc, char **argv) {
     ("n,driver-name", "name of this CSI driver",
       cxxopts::value<std::string>()->default_value("chfsplugin"))
     ("i,node-id", "node id",
-      cxxopts::value<std::string>()->default_value(""))
+      cxxopts::value<std::string>()->default_value("0"))
     ("s,chfs-server", "chfs server address", cxxopts::value<std::string>()->default_value(""))
   ;
 
