@@ -4,6 +4,7 @@ set(CMAKE_INSTALL_RPATH "${CHFS_LIBRARY_DIRS}")
 set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 add_executable(main
     main.cc
+    version.cc
     service.cc
     config.cc
     node_service.cc

@@ -9,28 +9,7 @@
 #include <iostream>
 
 #include "service.h"
-
-const std::string VERSION_FILE = "VERSION";
-
-/**
- * @fn
- * GetVersion returns the version string from the version file.
- * @param version_file the path of the version file.
- * @return the version string, or empty string if the version file does not
- * found
- */
-const std::string GetVersion(std::string version_file) {
-  std::ifstream ifs(version_file);
-  std::string version;
-  if (ifs.fail()) {
-    PLOG_ERROR << "version file \'" << version_file << "\' does not found";
-    return "";
-  }
-  while (getline(ifs, version)) {
-    return version;
-  }
-  return "";
-}
+#include "version.h"
 
 int main(int argc, char **argv) {
   cxxopts::Options options("chfsplugin", "CSI driver for CHFS");
@@ -53,7 +32,8 @@ int main(int argc, char **argv) {
     exit(0);
   }
   if (parsed.count("version")) {
-    std::cout << GetVersion(VERSION_FILE) << std::endl;
+    std::cout << get_csi_driver_chfs_version() << std::endl;
+    exit(0);
   }
 
   static plog::ConsoleAppender<plog::TxtFormatter> consoleAppender;
@@ -62,7 +42,7 @@ int main(int argc, char **argv) {
   const std::string endpoint = parsed["endpoint"].as<std::string>();
   const std::string driver_name = parsed["driver-name"].as<std::string>();
   const std::string node_id = parsed["node-id"].as<std::string>();
-  const std::string version = GetVersion(VERSION_FILE);
+  const std::string version = get_csi_driver_chfs_version();
   std::string server_address = parsed["chfs-server"].as<std::string>();
   if (server_address.empty()) {
     // set default chfs server address from CHFS_SERVER env var
