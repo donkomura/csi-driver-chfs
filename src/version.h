@@ -1,0 +1,2 @@
+#include <string>
+const std::string get_csi_driver_chfs_version() noexcept;
