@@ -10,9 +10,15 @@
     // Use 'forwardPorts' to make a list of ports inside the container available locally.
     // "forwardPorts": [],
     // Use 'postCreateCommand' to run commands after the container is created.
-    "postCreateCommand": ". .devcontainer/install-chfs.sh"
+    "postCreateCommand": ". .devcontainer/install-chfs.sh",
     // Configure tool-specific properties.
     // "customizations": {},
     // Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
     // "remoteUser": "root"
+    "runArgs": [
+        "--cap-add",
+        "SYS_ADMIN",
+        "--device",
+        "/dev/fuse"
+    ]
 }

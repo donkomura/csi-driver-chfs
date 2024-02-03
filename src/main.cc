@@ -17,6 +17,8 @@ int main(int argc, char **argv) {
   options.add_options()
     ("h,help", "Print this message")
     ("v,version", "version")
+    ("L,log-level", "log level [INFO, DEBUG, WARNING], default 'WARNING'", cxxopts::value<std::string>()->default_value("WARNING"))
+    ("d,debug", "debug mode", cxxopts::value<bool>()->default_value("false"))
     ("e,endpoint", "CSI endpoint",
       cxxopts::value<std::string>()->default_value("unix://tmp/csi.sock"))
     ("n,driver-name", "name of this CSI driver",
@@ -37,7 +39,12 @@ int main(int argc, char **argv) {
   }
 
   static plog::ConsoleAppender<plog::TxtFormatter> consoleAppender;
-  plog::init(plog::info, &consoleAppender);
+  plog::init(plog::warning, &consoleAppender);
+  if (parsed["debug"].as<bool>() || parsed["log-level"].as<std::string>() == "DEBUG") {
+    plog::get()->setMaxSeverity(plog::debug);
+  } else if (parsed["log-level"].as<std::string>() == "INFO") {
+    plog::get()->setMaxSeverity(plog::info);
+  }
 
   const std::string endpoint = parsed["endpoint"].as<std::string>();
   const std::string driver_name = parsed["driver-name"].as<std::string>();
