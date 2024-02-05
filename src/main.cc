@@ -39,11 +39,16 @@ int main(int argc, char **argv) {
   }
 
   static plog::ConsoleAppender<plog::TxtFormatter> consoleAppender;
-  plog::init(plog::warning, &consoleAppender);
+  plog::init(plog::info, &consoleAppender);
   if (parsed["debug"].as<bool>() || parsed["log-level"].as<std::string>() == "DEBUG") {
     plog::get()->setMaxSeverity(plog::debug);
   } else if (parsed["log-level"].as<std::string>() == "INFO") {
     plog::get()->setMaxSeverity(plog::info);
+  } else if (parsed["log-level"].as<std::string>() == "WARNING") {
+    plog::get()->setMaxSeverity(plog::warning);
+  } else {
+    std::cerr << "Invalid log level: " << parsed["log-level"].as<std::string>() << std::endl;
+    exit(1);
   }
 
   const std::string endpoint = parsed["endpoint"].as<std::string>();
