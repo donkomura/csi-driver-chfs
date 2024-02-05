@@ -10,7 +10,7 @@ git clone https://github.com/otatebe/chfs.git $HOME/chfs
 cd $HOME/chfs 
 spack load mochi-margo 
 autoreconf -i 
-./configure --prefix $HOME/local
+./configure --prefix $HOME/local --with-fuse=false
 make clean 
 make -j $(nproc) 
 make install
