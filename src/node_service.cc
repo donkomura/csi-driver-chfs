@@ -18,10 +18,9 @@ namespace node = csi::service::node;
 node::NodeService::NodeService(
     const csi::service::Config &config,
     std::vector<csi::v1::NodeServiceCapability_RPC_Type> capabilities)
-    : config_(config), capabilities_(capabilities) {
-  chfs_init(config_.server_address().c_str());
-}
-node::NodeService::~NodeService() { chfs_term(); }
+    : config_(config), capabilities_(capabilities) {}
+
+node::NodeService::~NodeService() {}
 
 grpc::Status node::NodeService::NodeStageVolume(
     grpc::ServerContext *context,
