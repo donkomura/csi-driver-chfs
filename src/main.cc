@@ -17,7 +17,7 @@ int main(int argc, char **argv) {
   options.add_options()
     ("h,help", "Print this message")
     ("v,version", "version")
-    ("L,log-level", "log level [INFO, DEBUG, WARNING], default 'WARNING'", cxxopts::value<std::string>()->default_value("WARNING"))
+    ("L,log-level", "log level [FATAL, ERROR, WARNING, INFO, DEBUG, VERBOSE], default 'INFO'", cxxopts::value<std::string>()->default_value("WARNING"))
     ("d,debug", "debug mode", cxxopts::value<bool>()->default_value("false"))
     ("e,endpoint", "CSI endpoint",
       cxxopts::value<std::string>()->default_value("unix://tmp/csi.sock"))
@@ -42,10 +42,16 @@ int main(int argc, char **argv) {
   plog::init(plog::info, &consoleAppender);
   if (parsed["debug"].as<bool>() || parsed["log-level"].as<std::string>() == "DEBUG") {
     plog::get()->setMaxSeverity(plog::debug);
-  } else if (parsed["log-level"].as<std::string>() == "INFO") {
-    plog::get()->setMaxSeverity(plog::info);
+  } else if (parsed["log-level"].as<std::string>() == "FATAL") {
+    plog::get()->setMaxSeverity(plog::fatal);
+  } else if (parsed["log-level"].as<std::string>() == "ERROR") {
+    plog::get()->setMaxSeverity(plog::error);
   } else if (parsed["log-level"].as<std::string>() == "WARNING") {
     plog::get()->setMaxSeverity(plog::warning);
+  } else if (parsed["log-level"].as<std::string>() == "INFO") {
+    plog::get()->setMaxSeverity(plog::info);
+  } else if (parsed["log-level"].as<std::string>() == "VERBOSE") {
+    plog::get()->setMaxSeverity(plog::verbose);
   } else {
     std::cerr << "Invalid log level: " << parsed["log-level"].as<std::string>() << std::endl;
     exit(1);
