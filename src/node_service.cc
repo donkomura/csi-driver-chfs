@@ -1,6 +1,12 @@
 #include "node_service.h"
 
+#include <filesystem>
+
+#ifdef __cplusplus
+extern "C" {
 #include <chfs.h>
+}
+#endif
 #include <csi.grpc.pb.h>
 #include <csi.pb.h>
 #include <plog/Log.h>
@@ -13,6 +19,7 @@ node::NodeService::NodeService(
     const csi::service::Config &config,
     std::vector<csi::v1::NodeServiceCapability_RPC_Type> capabilities)
     : config_(config), capabilities_(capabilities) {}
+
 node::NodeService::~NodeService() {}
 
 grpc::Status node::NodeService::NodeStageVolume(
@@ -34,6 +41,31 @@ grpc::Status node::NodeService::NodePublishVolume(
     const csi::v1::NodePublishVolumeRequest *request,
     csi::v1::NodePublishVolumeResponse *response) {
   PLOG_DEBUG << "NodePublishVolume: " << request->DebugString();
+  if (request->has_volume_capability() == false) {
+    return grpc::Status(grpc::StatusCode::INVALID_ARGUMENT,
+                        "Volume capabilities missing in request");
+  }
+  auto volume_capabilities = request->volume_capability();
+  std::string volume_id = request->volume_id();
+  if (volume_id.empty()) {
+    return grpc::Status(grpc::StatusCode::INVALID_ARGUMENT,
+                        "Volume ID missing in request");
+  }
+  std::string target_path = request->target_path();
+  if (target_path.empty()) {
+    return grpc::Status(grpc::StatusCode::INVALID_ARGUMENT,
+                        "Target path not provided");
+  }
+  if (!std::filesystem::create_directories(target_path)) {
+    if (std::filesystem::exists(target_path)) {
+      return grpc::Status(grpc::StatusCode::ALREADY_EXISTS,
+                          "Target path already exists");
+    }
+    return grpc::Status(grpc::StatusCode::INTERNAL,
+                        "Failed to create target path");
+  }
+
+  // todo : mount here
   return grpc::Status::OK;
 }
 

@@ -1,10 +1,5 @@
 #include "service.h"
 
-#ifdef __cplusplus
-extern "C" {
-#include <chfs.h>
-}
-#endif
 #include <grpc/grpc.h>
 #include <grpcpp/security/server_credentials.h>
 #include <grpcpp/server.h>
@@ -61,9 +56,7 @@ void Server::Run() {
   std::unique_ptr<grpc::Server> server(builder.BuildAndStart());
   PLOG_INFO << "Listening on " << config().endpoint();
 
-  chfs_init(config().server_address().c_str());
   server->Wait();
-  chfs_term();
 }
 }  // namespace service
 }  // namespace csi
