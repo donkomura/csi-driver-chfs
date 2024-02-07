@@ -17,7 +17,7 @@ int main(int argc, char **argv) {
   options.add_options()
     ("h,help", "Print this message")
     ("v,version", "version")
-    ("L,log-level", "log level [FATAL, ERROR, WARNING, INFO, DEBUG, VERBOSE], default 'INFO'", cxxopts::value<std::string>()->default_value("WARNING"))
+    ("L,log-level", "log level [FATAL, ERROR, WARNING, INFO, DEBUG, VERBOSE], default 'INFO'", cxxopts::value<std::string>()->default_value("INFO"))
     ("d,debug", "debug mode", cxxopts::value<bool>()->default_value("false"))
     ("e,endpoint", "CSI endpoint",
       cxxopts::value<std::string>()->default_value("unix://tmp/csi.sock"))
@@ -25,7 +25,7 @@ int main(int argc, char **argv) {
       cxxopts::value<std::string>()->default_value("chfsplugin"))
     ("i,node-id", "node id",
       cxxopts::value<std::string>()->default_value("0"))
-    ("s,chfs-server", "chfs server address", cxxopts::value<std::string>()->default_value(""))
+    ("s,chfs-server", "chfs server address, default CHFS_SERVER env var", cxxopts::value<std::string>()->default_value(""))
   ;
 
   auto parsed = options.parse(argc, argv);

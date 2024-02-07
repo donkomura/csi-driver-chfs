@@ -56,16 +56,18 @@ grpc::Status node::NodeService::NodePublishVolume(
     return grpc::Status(grpc::StatusCode::INVALID_ARGUMENT,
                         "Target path not provided");
   }
+  if (std::filesystem::exists(target_path)) {
+    return grpc::Status(grpc::StatusCode::ALREADY_EXISTS,
+                        "Target path already exists");
+  }
   if (!std::filesystem::create_directories(target_path)) {
-    if (std::filesystem::exists(target_path)) {
-      return grpc::Status(grpc::StatusCode::ALREADY_EXISTS,
-                          "Target path already exists");
-    }
     return grpc::Status(grpc::StatusCode::INTERNAL,
                         "Failed to create target path");
   }
 
-  // todo : mount here
+  std::string cmd = "chfuse " + target_path;
+  PLOG_DEBUG << "fuse mount cmd: " << cmd;
+  std::system(cmd.c_str());
   return grpc::Status::OK;
 }
 
