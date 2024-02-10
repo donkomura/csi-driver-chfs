@@ -55,6 +55,18 @@ macro(install_dependencies)
         FetchContent_Populate(csi-spec)
     endif()
 
+    set(googletest_VERSION v1.14.0)
+    message(STATUS "google test ${googletest_VERSION}")
+    include(FetchContent)
+    FetchContent_Declare(
+        googletest
+        GIT_REPOSITORY https://github.com/google/googletest.git
+        GIT_TAG v1.14.0
+    )
+    # For Windows: Prevent overriding the parent project's compiler/linker settings
+    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+    FetchContent_MakeAvailable(googletest)
+
     pkg_check_modules(CHFS REQUIRED chfs)
 
     include(cmake/GrpcGen.cmake)
