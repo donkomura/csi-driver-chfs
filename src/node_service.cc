@@ -1,6 +1,9 @@
 #include "node_service.h"
 
 #include <filesystem>
+#include <memory>
+
+#include "mounter.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -56,18 +59,10 @@ grpc::Status node::NodeService::NodePublishVolume(
     return grpc::Status(grpc::StatusCode::INVALID_ARGUMENT,
                         "Target path not provided");
   }
-  if (std::filesystem::exists(target_path)) {
-    return grpc::Status(grpc::StatusCode::ALREADY_EXISTS,
-                        "Target path already exists");
-  }
-  if (!std::filesystem::create_directories(target_path)) {
-    return grpc::Status(grpc::StatusCode::INTERNAL,
-                        "Failed to create target path");
-  }
 
-  std::string cmd = "chfuse " + target_path;
-  PLOG_DEBUG << "fuse mount cmd: " << cmd;
-  std::system(cmd.c_str());
+  if (!config_.mounter()->Mount(target_path)) {
+    return grpc::Status(grpc::StatusCode::INTERNAL, "Failed to mount volume");
+  }
   return grpc::Status::OK;
 }
 
@@ -91,10 +86,9 @@ grpc::Status node::NodeService::NodeUnpublishVolume(
     return grpc::Status(grpc::StatusCode::NOT_FOUND,
                         "Target path does not exist");
   }
-  std::string cmd = "fusermount -u " + target_path;
-  PLOG_DEBUG << "fuse unmount cmd: " << cmd;
-  std::system(cmd.c_str());
-
+  if (!config_.mounter()->Unmount(target_path)) {
+    return grpc::Status(grpc::StatusCode::INTERNAL, "Failed to unmount volume");
+  }
   std::filesystem::remove_all(target_path);
   if (std::filesystem::exists(target_path)) {
     return grpc::Status(grpc::StatusCode::INTERNAL,
