@@ -75,6 +75,31 @@ grpc::Status node::NodeService::NodeUnpublishVolume(
     grpc::ServerContext *context,
     const csi::v1::NodeUnpublishVolumeRequest *request,
     csi::v1::NodeUnpublishVolumeResponse *response) {
+  PLOG_DEBUG << "NodeUnpublishVolume: " << request->DebugString();
+
+  std::string volume_id = request->volume_id();
+  if (volume_id.empty()) {
+    return grpc::Status(grpc::StatusCode::INVALID_ARGUMENT,
+                        "Volume ID missing in request");
+  }
+  std::string target_path = request->target_path();
+  if (target_path.empty()) {
+    return grpc::Status(grpc::StatusCode::INVALID_ARGUMENT,
+                        "Target path not provided");
+  }
+  if (!std::filesystem::exists(target_path)) {
+    return grpc::Status(grpc::StatusCode::NOT_FOUND,
+                        "Target path does not exist");
+  }
+  std::string cmd = "fusermount -u " + target_path;
+  PLOG_DEBUG << "fuse unmount cmd: " << cmd;
+  std::system(cmd.c_str());
+
+  std::filesystem::remove_all(target_path);
+  if (std::filesystem::exists(target_path)) {
+    return grpc::Status(grpc::StatusCode::INTERNAL,
+                        "Failed to remove target path");
+  }
   return grpc::Status::OK;
 }
 
