@@ -18,3 +18,4 @@ include(cmake/Dependencies.cmake)
 install_dependencies()
 
 add_subdirectory(src)
+add_subdirectory(test)

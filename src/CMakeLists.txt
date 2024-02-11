@@ -7,6 +7,7 @@ add_executable(main
     version.cc
     service.cc
     config.cc
+    fuse_mounter.cc
     node_service.cc
     identity_service.cc
     controller_service.cc

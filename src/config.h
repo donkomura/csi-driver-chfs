@@ -1,7 +1,10 @@
 #ifndef CSI_SERVICE_CONFIG_H_
 #define CSI_SERVICE_CONFIG_H_
 
+#include <memory>
 #include <string>
+
+#include "fuse_mounter.h"
 
 namespace csi {
 namespace service {
@@ -17,6 +20,7 @@ class Config {
   const std::string &node_id() const { return node_id_; }
   const std::string &version() const { return version_; }
   const std::string &server_address() const { return server_address_; }
+  std::shared_ptr<FuseMounter> mounter() const { return mounter_; }
 
  private:
   std::string driver_name_;
@@ -24,6 +28,7 @@ class Config {
   std::string node_id_;
   std::string version_;
   std::string server_address_;
+  std::shared_ptr<FuseMounter> mounter_;
 };
 
 }  // namespace service
