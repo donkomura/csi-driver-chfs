@@ -33,7 +33,7 @@ grpc::Status IdentityService::GetPluginCapabilities(
   auto *capability = response->mutable_capabilities()->Add();
   capability->mutable_service()->set_type(
       csi::v1::PluginCapability::Service::Type::
-          PluginCapability_Service_Type_CONTROLLER_SERVICE);
+          PluginCapability_Service_Type_UNKNOWN);
   return grpc::Status::OK;
 }
 
