@@ -17,6 +17,9 @@ bool FuseMounter::Mount(const std::string &path) {
   }
 
   std::string cmd = "chfuse " + path;
+  if (!this->server_address_.empty()) {
+    cmd += " --server=" + this->server_address_;
+  }
   PLOG_DEBUG << "fuse mount cmd: " << cmd;
   std::system(cmd.c_str());
   return true;
@@ -29,5 +32,8 @@ bool FuseMounter::Unmount(const std::string &path) {
   PLOG_DEBUG << "fuse unmount cmd: " << cmd;
   std::system(cmd.c_str());
   return true;
+}
+void FuseMounter::SetAddress(const std::string &address) {
+  server_address_ = address;
 }
 }  // namespace csi::service

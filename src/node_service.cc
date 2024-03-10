@@ -59,7 +59,13 @@ grpc::Status node::NodeService::NodePublishVolume(
     return grpc::Status(grpc::StatusCode::INVALID_ARGUMENT,
                         "Target path not provided");
   }
-
+  auto volume_attribute = request->volume_context();
+  const std::string server_address = volume_attribute["server"];
+  if (server_address.empty()) {
+    return grpc::Status(grpc::StatusCode::INVALID_ARGUMENT,
+                        "Server address not provided");
+  }
+  config_.mounter()->SetAddress(server_address);
   if (!config_.mounter()->Mount(target_path)) {
     return grpc::Status(grpc::StatusCode::INTERNAL, "Failed to mount volume");
   }
