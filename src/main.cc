@@ -22,10 +22,9 @@ int main(int argc, char **argv) {
     ("e,endpoint", "CSI endpoint",
       cxxopts::value<std::string>()->default_value("unix://tmp/csi.sock"))
     ("n,driver-name", "name of this CSI driver",
-      cxxopts::value<std::string>()->default_value("chfsplugin"))
+      cxxopts::value<std::string>()->default_value("chfs.csi.k8s.io"))
     ("i,node-id", "node id",
       cxxopts::value<std::string>()->default_value("0"))
-    ("s,chfs-server", "chfs server address, default CHFS_SERVER env var", cxxopts::value<std::string>()->default_value(""))
   ;
 
   auto parsed = options.parse(argc, argv);
@@ -61,17 +60,7 @@ int main(int argc, char **argv) {
   const std::string driver_name = parsed["driver-name"].as<std::string>();
   const std::string node_id = parsed["node-id"].as<std::string>();
   const std::string version = get_csi_driver_chfs_version();
-  std::string server_address = parsed["chfs-server"].as<std::string>();
-  if (server_address.empty()) {
-    // set default chfs server address from CHFS_SERVER env var
-    const char *address = std::getenv("CHFS_SERVER");
-    if (address == NULL) {
-      PLOG_ERROR << "chfs server address does not found";
-      exit(1);
-    }
-    server_address = address;
-  }
-  csi::service::Config config(endpoint, driver_name, node_id, version, server_address);
+  csi::service::Config config(endpoint, driver_name, node_id, version);
 
   csi::service::Server server(config);
   server.Run();

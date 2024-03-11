@@ -39,7 +39,7 @@ spec:
             timeoutSeconds: 15
           env:
             - name: DRIVER_REG_SOCK_PATH
-              value: /var/lib/kubelet/plugins/csi-chfsplugin/csi.sock
+              value: /var/lib/kubelet/plugins/csi-chfs-plugin/csi.sock
             - name: KUBE_NODE_NAME
               valueFrom:
                 fieldRef:
@@ -64,9 +64,8 @@ spec:
             allowPrivilegeEscalation: true
           image: chfs-csi-plugin #XXX
           args:
-            - "--nodeid=$(NODE_ID)"
+            - "--node-id=$(NODE_ID)"
             - "--endpoint=$(CSI_ENDPOINT)"
-            - "--server=$(CHFS_SERVER)"
           env:
             - name: NODE_ID
               valueFrom:
@@ -74,8 +73,6 @@ spec:
                   fieldPath: spec.nodeName
             - name: CSI_ENDPOINT
               value: unix:///csi/csi.sock
-            - name: CHFS_SERVER
-              value: "ofi+sockets://172.17.0.2:39301"
           ports:
             - containerPort: 29653
               name: healthz
@@ -107,7 +104,7 @@ spec:
       volumes:
         - name: socket-dir
           hostPath:
-            path: /var/lib/kubelet/plugins/csi-chfsplugin
+            path: /var/lib/kubelet/plugins/csi-chfs-plugin
             type: DirectoryOrCreate
         - name: pods-mount-dir
           hostPath:
