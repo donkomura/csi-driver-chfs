@@ -11,6 +11,7 @@
 #include "controller_service.h"
 #include "identity_service.h"
 #include "node_service.h"
+#include "state.h"
 
 namespace csi {
 namespace service {
@@ -41,10 +42,12 @@ void Server::AddNodeCapabilities(
 }
 
 void Server::Run() {
+  csi::state::State state;
   grpc::ServerBuilder builder;
   builder.AddListeningPort(config().endpoint(),
                            grpc::InsecureServerCredentials());
-  node::NodeService node_service(config(), node_capabilities());
+  node::NodeService node_service(config(), std::ref(state),
+                                 node_capabilities());
   identity::IdentityService identity_service(config());
   controller::ControllerService controller_service(config(),
                                                    controller_capabilities());

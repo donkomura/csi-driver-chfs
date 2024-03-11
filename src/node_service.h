@@ -5,12 +5,13 @@
 #include <csi.pb.h>
 
 #include "config.h"
+#include "state.h"
 
 namespace csi::service::node {
 class NodeService final : public csi::v1::Node::Service {
  public:
   NodeService(
-      csi::service::Config const &config,
+      csi::service::Config const &config, csi::state::State &state,
       std::vector<csi::v1::NodeServiceCapability_RPC_Type> capabilities);
   NodeService(const NodeService &) = delete;
   NodeService &operator=(const NodeService &) = delete;
@@ -50,6 +51,7 @@ class NodeService final : public csi::v1::Node::Service {
 
  private:
   csi::service::Config const &config_;
+    csi::state::State &state_;
   std::vector<csi::v1::NodeServiceCapability_RPC_Type> capabilities_;
 };
 }  // namespace csi::service::node

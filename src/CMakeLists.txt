@@ -7,6 +7,7 @@ add_executable(chfsplugin
     version.cc
     service.cc
     config.cc
+    state.cc
     fuse_mounter.cc
     node_service.cc
     identity_service.cc
