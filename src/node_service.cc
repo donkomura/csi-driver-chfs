@@ -3,8 +3,6 @@
 #include <filesystem>
 #include <memory>
 
-#include "mounter.h"
-
 #ifdef __cplusplus
 extern "C" {
 #include <chfs.h>
@@ -15,6 +13,7 @@ extern "C" {
 #include <plog/Log.h>
 
 #include "config.h"
+#include "mounter.h"
 
 namespace node = csi::service::node;
 
@@ -44,11 +43,6 @@ grpc::Status node::NodeService::NodePublishVolume(
     const csi::v1::NodePublishVolumeRequest *request,
     csi::v1::NodePublishVolumeResponse *response) {
   PLOG_DEBUG << "NodePublishVolume: " << request->DebugString();
-  if (request->has_volume_capability() == false) {
-    return grpc::Status(grpc::StatusCode::INVALID_ARGUMENT,
-                        "Volume capabilities missing in request");
-  }
-  auto volume_capabilities = request->volume_capability();
   std::string volume_id = request->volume_id();
   if (volume_id.empty()) {
     return grpc::Status(grpc::StatusCode::INVALID_ARGUMENT,
@@ -65,9 +59,24 @@ grpc::Status node::NodeService::NodePublishVolume(
     return grpc::Status(grpc::StatusCode::INVALID_ARGUMENT,
                         "Server address not provided");
   }
-  config_.mounter()->SetAddress(server_address);
-  if (!config_.mounter()->Mount(target_path)) {
-    return grpc::Status(grpc::StatusCode::INTERNAL, "Failed to mount volume");
+
+  {
+    std::lock_guard<std::mutex> lock(state_.mutex());
+    if (state_.volume_map().CheckVolumeId(volume_id, target_path)) {
+      PLOG_DEBUG << "Volume already published:"
+                 << "target_path=" << target_path << " volume_id=" << volume_id;
+      return grpc::Status(grpc::StatusCode::ABORTED, "Volume already exists");
+    }
+    state_.volume_map().AddVolumeId(volume_id, target_path);
+    if (!std::filesystem::exists(target_path)) {
+      if (!std::filesystem::create_directories(target_path)) {
+        return grpc::Status(grpc::StatusCode::INTERNAL,
+                            "Failed to create target path");
+      }
+    }
+    if (!config_.mounter()->Mount(server_address, target_path)) {
+      return grpc::Status(grpc::StatusCode::INTERNAL, "Failed to mount volume");
+    }
   }
   return grpc::Status::OK;
 }
@@ -78,27 +87,35 @@ grpc::Status node::NodeService::NodeUnpublishVolume(
     csi::v1::NodeUnpublishVolumeResponse *response) {
   PLOG_DEBUG << "NodeUnpublishVolume: " << request->DebugString();
 
-  std::string volume_id = request->volume_id();
+  const std::string volume_id = request->volume_id();
   if (volume_id.empty()) {
     return grpc::Status(grpc::StatusCode::INVALID_ARGUMENT,
                         "Volume ID missing in request");
   }
-  std::string target_path = request->target_path();
+  const std::string target_path = request->target_path();
   if (target_path.empty()) {
     return grpc::Status(grpc::StatusCode::INVALID_ARGUMENT,
-                        "Target path not provided");
+                        "Target path is missing in request");
   }
-  if (!std::filesystem::exists(target_path)) {
-    return grpc::Status(grpc::StatusCode::NOT_FOUND,
-                        "Target path does not exist");
-  }
-  if (!config_.mounter()->Unmount(target_path)) {
-    return grpc::Status(grpc::StatusCode::INTERNAL, "Failed to unmount volume");
-  }
-  std::filesystem::remove_all(target_path);
-  if (std::filesystem::exists(target_path)) {
-    return grpc::Status(grpc::StatusCode::INTERNAL,
-                        "Failed to remove target path");
+
+  {
+    std::lock_guard<std::mutex> lock(state_.mutex());
+    config_.mounter()->Unmount(target_path);
+    // if (!config_.mounter()->Unmount(target_path)) {
+    //   PLOG_ERROR << "Failed to unmount volume:"
+    //              << "target_path=" << target_path << " volume_id=" <<
+    //              volume_id;
+    //   return grpc::Status(grpc::StatusCode::INTERNAL,
+    //                       "Failed to unmount volume");
+    // }
+    std::filesystem::remove_all(target_path);
+    if (std::filesystem::exists(target_path)) {
+      PLOG_ERROR << "Failed to remove target path:"
+                 << "target_path=" << target_path << " volume_id=" << volume_id;
+      return grpc::Status(grpc::StatusCode::INTERNAL,
+                          "Failed to remove target path");
+    }
+    state_.volume_map().DeleteVolumeId(volume_id, target_path);
   }
   return grpc::Status::OK;
 }
