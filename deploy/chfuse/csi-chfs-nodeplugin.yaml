@@ -64,9 +64,9 @@ spec:
             allowPrivilegeEscalation: true
           image: chfs-csi-plugin #XXX
           args:
-            - "--nodeid=$(NODE_ID)"
+            - "--node-id=$(NODE_ID)"
             - "--endpoint=$(CSI_ENDPOINT)"
-            - "--server=$(CHFS_SERVER)"
+            - "--log-level=$(LOG_LEVEL)"
           env:
             - name: NODE_ID
               valueFrom:
@@ -74,8 +74,8 @@ spec:
                   fieldPath: spec.nodeName
             - name: CSI_ENDPOINT
               value: unix:///csi/csi.sock
-            - name: CHFS_SERVER
-              value: "ofi+sockets://172.17.0.2:39301"
+            - name: LOG_LEVEL
+              value: DEBUG
           ports:
             - containerPort: 29653
               name: healthz
