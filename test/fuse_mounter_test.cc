@@ -8,6 +8,7 @@
 #define TST_FUSE_MAGIC 0x65735546
 
 const std::string kTestMountPoint = "/tmp/test/chfs";
+const std::string kTestServer = "localhost:50051";
 
 TEST(Mounter, FuseMounter) {
   // delete the directory if it exists
@@ -19,7 +20,7 @@ TEST(Mounter, FuseMounter) {
   std::unique_ptr<csi::service::FuseMounter> mounter(
       new csi::service::FuseMounter());
   // mount
-  EXPECT_TRUE(mounter->Mount(kTestMountPoint));
+  EXPECT_TRUE(mounter->Mount(kTestServer, kTestMountPoint));
   // check
   EXPECT_EQ(statfs(kTestMountPoint.c_str(), &fs), 0);
   EXPECT_EQ(fs.f_type, TST_FUSE_MAGIC);

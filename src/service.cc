@@ -49,12 +49,12 @@ void Server::Run() {
   node::NodeService node_service(config(), std::ref(state),
                                  node_capabilities());
   identity::IdentityService identity_service(config());
-  controller::ControllerService controller_service(config(),
-                                                   controller_capabilities());
+  // controller::ControllerService controller_service(config(),
+  //                                                  controller_capabilities());
 
   builder.RegisterService(&node_service);
   builder.RegisterService(&identity_service);
-  builder.RegisterService(&controller_service);
+  // builder.RegisterService(&controller_service);
 
   std::unique_ptr<grpc::Server> server(builder.BuildAndStart());
   PLOG_INFO << "Listening on " << config().endpoint();
